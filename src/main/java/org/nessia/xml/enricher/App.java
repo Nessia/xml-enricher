@@ -16,9 +16,6 @@ import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
 import org.apache.commons.io.FilenameUtils;
-//import org.apache.xerces.parsers.DOMParser;
-//import org.w3c.dom.Document;
-//import org.xml.sax.SAXException;
 import org.jdom.Document;
 import org.jdom.input.DOMBuilder;
 import org.jdom.output.Format;
