@@ -1,22 +1,24 @@
 package org.nessia.xml.enricher;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
+import org.jdom.Document;
+import org.jdom.Element;
+
 
 public class TransformationsContainer {
 
     private static final Logger LOGGER = Logger.getLogger(TransformationsContainer.class.getName());
 
     public static TransformationsContainer instanceFromDocument(Document t){
-        int len = t.getChildNodes().getLength();
-        Map<String,Node> nodesMap = new HashMap<String, Node>(len);
-        for(int i=0; i<len; i++){
-            Node node = t.getChildNodes().item(i);
-            String nombre = node.getNodeName();
+        Element root = t.getRootElement();
+        List<Element> nodes = root.getChildren();
+        Map<String,Element> nodesMap = new HashMap<String, Element>(nodes.size());
+        for(Element node : nodes){
+            String nombre = node.getName();
             LOGGER.info("Nodo de transformaciones leido: " + nombre);
             nodesMap.put(nombre, node);
         }
@@ -25,17 +27,17 @@ public class TransformationsContainer {
 
     }
 
-    public Map<String,Node> nodesMap;
+    public Map<String,Element> nodesMap;
 
-    public TransformationsContainer(Map<String,Node> nodesMap){
+    public TransformationsContainer(Map<String,Element> nodesMap){
         this.nodesMap = nodesMap;
     }
 
-//    public Map<String, Node> getNodesMap() {
+//    public Map<String, Element> getNodesMap() {
 //        return nodesMap;
 //    }
 //
-//    public void setNodesMap(Map<String, Node> nodesMap) {
+//    public void setNodesMap(Map<String, Element> nodesMap) {
 //        this.nodesMap = nodesMap;
 //    }
 
@@ -44,7 +46,7 @@ public class TransformationsContainer {
         return nodesMap.containsKey(value);
     }
 
-    public Node getTransformationNode(String key){
+    public Element getTransformationNode(String key){
         return nodesMap.get(key);
     }
 }

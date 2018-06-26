@@ -1,10 +1,10 @@
 package org.nessia.xml.enricher;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
+import org.jdom.Document;
+import org.jdom.Element;
 
 public interface NodeTransformer {
 
-    Node transform(Node n);
+    Element transform(Element n);
     Document transform(Document origin, Document transformations);
 }

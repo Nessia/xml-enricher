@@ -1,6 +1,7 @@
 package org.nessia.xml.enricher;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import javax.xml.XMLConstants;
@@ -15,8 +16,13 @@ import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.xerces.parsers.DOMParser;
-import org.w3c.dom.Document;
+//import org.apache.xerces.parsers.DOMParser;
+//import org.w3c.dom.Document;
+//import org.xml.sax.SAXException;
+import org.jdom.Document;
+import org.jdom.input.DOMBuilder;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
 import org.xml.sax.SAXException;
 
 public class App {
@@ -61,20 +67,19 @@ public class App {
         DocumentBuilder parser;
         try {
             parser = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            Document originDocument = parser.parse(new File(originPath));
-
-
-            Document transformersDocument = parser.parse(new File(transformationsPath));
+            org.w3c.dom.Document doc = parser.parse(new File(originPath));
+            Document originDocument = domParser(originPath);
 
             // Optionally validate the original document
             if(schemaPath != null){
-                validate(schemaPath, originDocument);
+                validate(schemaPath, doc);
             }
+
+            Document transformersDocument = domParser(transformationsPath);
 
             NodeTransformer transformer = new NodeTransformerMap();
             Document output = transformer.transform(originDocument, transformersDocument);
-
-
+            domWriter(output, outputFileName);
 
             //
         } catch (ParserConfigurationException e) {
@@ -88,12 +93,9 @@ public class App {
             e.printStackTrace();
         }
 
-
-
-
     }
 
-    private static void validate(String schemaPath, Document originDocument){
+    private static void validate(String schemaPath, org.w3c.dom.Document originDocument){
         try{
             // create a SchemaFactory capable of understanding WXS schemas
             SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
@@ -113,5 +115,24 @@ public class App {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+    }
+
+    private static Document domParser(org.w3c.dom.Document doc){
+        DOMBuilder domBuilder = new DOMBuilder();
+        return domBuilder.build(doc);
+    }
+
+    private static Document domParser(String fileName)
+            throws ParserConfigurationException, SAXException, IOException{
+        DocumentBuilder dBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        org.w3c.dom.Document doc = dBuilder.parse(new File(fileName));
+        return domParser(doc);
+    }
+
+    private static void domWriter(Document doc, String fileName) throws IOException {
+        XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
+        //output xml to console for debugging
+        //xmlOutputter.output(doc, System.out);
+        xmlOutputter.output(doc, new FileOutputStream(fileName));
     }
 }

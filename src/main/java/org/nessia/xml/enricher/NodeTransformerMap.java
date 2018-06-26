@@ -1,10 +1,13 @@
 package org.nessia.xml.enricher;
 
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
+import org.jdom.Document;
+import org.jdom.Element;
+
+
 
 public class NodeTransformerMap implements NodeTransformer{
 
@@ -17,15 +20,15 @@ public class NodeTransformerMap implements NodeTransformer{
     }
 
     //@Override
-    public Node transform(Node n) {
-        String nodeName = n.getNodeName();
+    public Element transform(Element n) {
+        String nodeName = n.getName();
         if(nodeName == null){
             return n;
         }
         for(TransformationTypes t : TransformationTypes.values()){
             String key = nodeName + "-" + t.toString();
             if(container.contains(key)){
-                Node transformations = container.getTransformationNode(key);
+                Element transformations = container.getTransformationNode(key);
                 switch(t){
                 case APPEND:
                     append(n, transformations);
@@ -45,17 +48,17 @@ public class NodeTransformerMap implements NodeTransformer{
         return n;
     }
 
-    private Node prepend(Node origin, Node transf){
+    private Element prepend(Element origin, Element transf){
         //TODO
         return origin;
     }
 
-    private Node append(Node origin, Node transf){
+    private Element append(Element origin, Element transf){
         //TODO
         return origin;
     }
 
-    private Node addAttrs(Node origin, Node transf){
+    private Element addAttrs(Element origin, Element transf){
         //TODO
         return origin;
     }
@@ -63,14 +66,19 @@ public class NodeTransformerMap implements NodeTransformer{
     public Document transform(Document origin, Document transformations) {
         this.container = TransformationsContainer.instanceFromDocument(transformations);
         // Go through every node in origin
-        origin.getDocumentElement();
-        recursiveTransform();
+        Element root = origin.getRootElement();
+
+        recursiveTransform(root);
 
         return origin;
     }
 
-    public Node recursiveTransform(){
-
+    public void recursiveTransform(Element node){
+        transform(node);
+        List<Element> children = node.getChildren();
+        for(Element child : children){
+            recursiveTransform(child);
+        }
     }
 
 }
