@@ -3,6 +3,7 @@ package org.nessia.xml.enricher;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
@@ -28,21 +29,23 @@ public class App {
 
     public static void main(String[] args) {
         if(args.length < 2){
-            System.err.println("Número incorrecto de argumentos");
+            System.err.println("Incorrect number of arguments");
             System.exit(-1);
         }
+
+        System.out.println("Files in . : " + Arrays.toString(new File(".").listFiles()));
 
         String originPath = args[0];
         File origin = new File(originPath);
         if(!origin.exists()){
-            System.err.println("El fichero de origen no existe");
+            System.err.println("Origin file does not exist");
             System.exit(-1);
         }
 
 
         String transformationsPath = args[1];
         if(!new File(transformationsPath).exists()){
-            System.err.println("El fichero de transformaciones no existe");
+            System.err.println("Transformations file does not exist");
             System.exit(-1);
         }
 
@@ -51,7 +54,7 @@ public class App {
             outputFileName = args[3];
         }else{
             String extension = FilenameUtils.getExtension(originPath);
-            outputFileName = originPath.substring(0, originPath.length() - extension.length())
+            outputFileName = originPath.substring(0, originPath.length() - extension.length() - 1)
                     + OUTPUT_SUFIX + "." + extension;
         }
 
@@ -129,7 +132,7 @@ public class App {
     private static void domWriter(Document doc, String fileName) throws IOException {
         XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
         //output xml to console for debugging
-        //xmlOutputter.output(doc, System.out);
+        xmlOutputter.output(doc, System.out);
         xmlOutputter.output(doc, new FileOutputStream(fileName));
     }
 }
